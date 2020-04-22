@@ -1,0 +1,82 @@
+
+<script>
+// 写一个 UTF-8 Encoding 的函数
+
+/* 
+  思路：
+  对于输入的字符，求出Unicode码，
+  依照以下Unicode范围与UTF-8编码方式表，显示二进制编码方式：
+  
+    Unicode符号范围     |    UTF-8编码方式
+       (十六进制)       |      （二进制）
+ ----------------------+---------------------------------------------
+   0000 0000-0000 007F | 0xxxxxxx
+   0000 0080-0000 07FF | 110xxxxx 10xxxxxx
+   0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+   0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+
+*/
+
+function UTF8_Encoding(String){
+    //return new Buffer();
+    var a_uni16 = String.codePointAt(0); //求出字符的Unicode
+    var a_uni2 = a_uni16.toString(2)
+
+    if (a_uni16 <= "007F") {  // 0xxxxxxx
+        
+        document.write("0");  //首位0
+        for (i=1;i<8-a_uni2.length;i++){   //高位补0
+            document.write("0");  
+        };
+        document.write(a_uni2);   //本字符显示
+         
+
+    } else if (a_uni16 <= "07FF") { // 110xxxxx 10xxxxxx
+        document.write("110");  
+
+        a_uni2_begin = a_uni2.substring(0,a.a_uni2.length-6);   //第一字节后五位
+        for (i=1;i<=5-a_uni2_begin.length;i++){  
+            document.write("0");  
+        };
+        document.write(a_uni2_begin);
+
+        a_uni2_last6 = a_uni2.substring(a_uni2.length-6,a_uni2.length); //后六位
+        document.write("10"+a_uni2_last6);
+    
+
+    } else if (a_uni16 <= "FFFF") {  //1110xxxx 10xxxxxx 10xxxxxx
+        document.write("1110"); 
+
+        a_uni2_begin = a_uni2.substring(0,a.a_uni2.length-12);   //第一字节后四位
+        for (i=1;i<=4-a_uni2_begin.length;i++){  
+            document.write("0");  
+        };
+        document.write(a_uni2_begin);
+        
+        a_uni2_mid6 = a_uni2.substring(a_uni2.length-12,a_uni2.length-6); //中间六位
+        document.write("10"+a_uni2_mid6);
+
+        a_uni2_last6 = a_uni2.substring(a_uni2.length-6,a_uni2.length); //后六位
+        document.write("10"+a_uni2_last6);
+
+
+    } else{    //11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+        document.write("11110"); 
+
+        a_uni2_begin = a_uni2.substring(0,a.a_uni2.length-18);   //第一字节后三位
+        for (i=1;i<=3-a_uni2_begin.length;i++){  
+            document.write("0");  
+        };
+        document.write(a_uni2_begin);
+
+        a_uni2_mid12 = a_uni2.substring(a_uni2.length-18,a_uni2.length-12); //后面三字节
+        document.write("10"+a_uni2_mid12);
+        a_uni2_mid6 = a_uni2.substring(a_uni2.length-12,a_uni2.length-6); 
+        document.write("10"+a_uni2_mid6);
+        a_uni2_last6 = a_uni2.substring(a_uni2.length-6,a_uni2.length); 
+        document.write("10"+a_uni2_last6);
+
+    }
+}
+
+</script>
