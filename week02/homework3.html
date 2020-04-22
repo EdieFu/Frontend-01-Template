@@ -1,0 +1,42 @@
+// 写一个正则表达式，匹配所有的字符串直接量，单引号和双引号
+
+思路：
+
+1、双引号定义
+
+   " DoubleStringCharacters(opt) "写成：
+   "(?:[ DoubleStringCharacter  ])*"
+
+2、由DoubleStringCharacter的产生式由上层往下逐层分解：
+   2.1、SourceCharacter but not one of " or \ or LineTerminator：
+           [^"\\\n\r\u2028\u2029]
+
+   2.2、<LS>和<PS>
+        [\u2028]
+        [\u2029]
+   
+   2.3、\ EscapeSequence，以下解析EscapeSequence
+          2.3.1、CharacterEscapeSequence
+                    2.3.1.1、SingleEscapeCharacter
+                              ['"\\bfnrtv] 
+                    2.3.1.2、NonEscapeCharacter
+                              [^0-9ux'"\\bfnrtv\n\r\u2028\2029]
+
+          2.3.2、HexEscapeSequence
+                   x[0-9a-fA-F]{2}
+
+          2.3.3、UnicodeEscapeSequence 
+                   u[0-9a-fA-F]{4}   
+          2.3.4、合起来\ EscapeSequence：
+                   \\x[0-9a-fA-F]{2} |  \\u[0-9a-fA-F]{4}
+
+   2.4、LineContinuation :: \ LineTerminatorSequence
+           \[\n\r\u2028\u2029]
+        
+       
+3、用“|”合并
+   "(?:[^"\\\n\r\u2028\u2029]|\\ (?:['"\\bfnrtv\n\r\u2028\u2029]|\r\n )|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[^0-9ux'"\\bfnrtv\n\r\u2028\2029])*"
+
+
+4、单引号同理：
+   '(?:[^'\\\n\r\u2028\u2029]|\\ (?:["'\\bfnrtv\n\r\u2028\u2029]|\r\n )|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[^0-9ux"'\\bfnrtv\n\r\u2028\2029])*'
