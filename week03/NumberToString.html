@@ -1,0 +1,75 @@
+<script>
+
+/*   NumberToString
+ */
+
+
+/*   十进制正数/负数 
+     124
+     -12.15
+     0.034
+     0  
+      科学计数法 
+     121e1
+     1.21E+3
+     12.1E-2   
+     
+     0.？
+
+*/
+
+function convertNumberToString(number,hex){
+    if(arguments.length<2) {  //默认十进制
+        hex = 10;
+    }
+    
+    if (number<0) {     //如果是负数，先转成正数
+        var sig = '-';
+        number = -number;
+    } 
+    var integer = Math.floor(number);
+    var fraction = number - integer;  //该fraction值带有浮点数精度
+
+    if ( fraction > 0) {  
+        var fractionlength = number.toString().split(".")[1].length;  //如果是小数，得到小数位数
+    }
+    
+    fraction = (number*10**fractionlength - integer*10**fractionlength) / 10**fractionlength;
+    var string = '';
+
+    //整数部分
+    if (integer == 0) {
+        string = string + '0'
+    }
+    while (integer > 0) {
+        string = String(integer % hex) + string;
+        integer = Math.floor(integer / hex);
+    }
+
+    //小数点
+    if ( fraction > 0) {
+        string = string + '.';
+    }
+    //小数部分
+    
+    var nextFrantionCh = '';
+    var fractionToInt = fraction*10**fractionlength; //直接把小数部分转成整数，按整数打印  
+    while (fractionToInt > 0) {
+        fractionlength--;
+        nextFrantionCh = Math.floor(fractionToInt / hex**fractionlength);
+        string = string + String(nextFrantionCh) ;
+        fractionToInt = fractionToInt - nextFrantionCh*hex**fractionlength;
+    }
+
+    if (sig == '-') {
+        return (sig + string);
+
+    } else {
+        return string
+        }
+    
+}
+convertNumberToString(12.15,10)
+
+
+</script>
