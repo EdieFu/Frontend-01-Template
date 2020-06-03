@@ -1,0 +1,49 @@
+<div style="font-size:50px;line-height:100px;background-color:pink;">
+    <!--基线baseline-->
+    <div style="vertical-align:baseline;overflow:visible;display:inline-block;width:1px;height:1px;">
+        <div style="width:1000px;;height:1px;background:red;"></div>
+    </div>
+    
+     Hello 
+    <div style="line-height:70px;width:100px;height:100px;background-color:aqua;display:inline-block">world!</div>
+   
+</div>
+
+<!--
+    hello和world文字会baseline对齐，但行高不同，如果把“world!”文字去掉，则是一个没有文字的line-box，基线在底部
+
+    所以一个line-box一般会配vertical-align:bottom/top属性去用
+-->
+
+<div style="font-size:50px;line-height:100px;background-color:pink;">
+    <!--基线baseline-->
+    <div style="vertical-align:baseline;overflow:visible;display:inline-block;width:1px;height:1px;">
+        <div style="width:1000px;;height:1px;background:red;"></div>
+    </div>
+    
+     Hello 
+    <div style="vertical-align:bottom;line-height:70px;width:100px;height:150px;background-color:aqua;display:inline-block"></div>
+   
+</div>
+
+
+
+
+<div style="font-size:50px;line-height:100px;background-color:pink;">
+    <div style="vertical-align:text-bottom;overflow:visible;display:inline-block;width:1px;height:1px;">
+        <div style="width:1000px;;height:1px;background:red;"></div>
+    </div>
+    <div style="vertical-align:text-top;overflow:visible;display:inline-block;width:1px;height:1px;">
+        <div style="width:1000px;;height:1px;background:red;"></div>
+    </div>
+    <span>Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello Hello </span>
+    <div style="vertical-align:text-bottom;line-height:70px;width:100px;height:150px;background-color:aqua;display:inline-block">1</div>
+    <div style="vertical-align:top;line-height:70px;width:100px;height:50px;background-color:aqua;display:inline-block">1</div>
+    <div style="vertical-align:base-line;line-height:70px;width:100px;height:550px;background-color:plum;display:inline-block">1</div>
+
+</div>
+<!--  
+    >$0.getClientRects()  //span里的盒
+    <DomRectlist …………   一个rect是一个盒，有三个盒，一个行盒里的三个inline-box
+    一个span里面产生了三个line-box，即浏览器会根据页面的条件和实际的inline盒子的宽度来计算产生几个盒
+-->
