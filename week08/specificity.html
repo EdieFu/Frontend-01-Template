@@ -1,0 +1,35 @@
+<style>
+    div#a.b .c[id=x] {
+        color: red;
+    }
+
+    #a.b div.c[id=x] {  /*互换位置可以覆盖的，优先级一样 */
+        color: green;
+    }
+
+    #a.b div.c#x {  /*测试[id=x]和#x的优先级*/
+        color: green;
+    }
+
+    #a:not(#b) {
+        color: green;
+    }
+
+    #a {   /* 测试#a和#a:not优先级*/
+        color: red;
+    }
+
+    #x #a {   /* 测试#a#x和#a:not优先级*/
+        color: red;
+    }
+
+</style>
+
+<div id="a" class="b">
+    <div class="c" id="x">red</div>
+</div>
+
+
+<div id="x" class="b">
+    <div class="c" id="x">red</div>
+</div>
