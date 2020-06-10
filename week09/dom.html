@@ -1,0 +1,45 @@
+<div id="x">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+</div>
+
+<div id="b">
+</div>
+
+<!--
+> document.getElementById("x")
+< div id=​"x">​<div>​1​</div>​</div>​
+> document.getElementById("b")
+   <div id=​"b">​
+​   </div>​
+> document.getElementById("b").appendChild(document.getElementById("x").children[1])
+< <div>​2​</div>
+
+结果把div2移到div“x”中​
+
+是否living collection
+> var children = document.getElementById("x").children
+> children
+< HTMLCollection [div]0: divlength: 1__proto__: HTMLCollection
+
+> document.getElementById("b").appendChild(document.getElementById("x").children[0])
+< <div>​1​</div>​
+> children
+< HTMLCollection [] 空了
+-->
+
+<script>
+    var x = document.getElementById("x");
+    var b = document.getElementById("b");
+    for (var i = 0; i < x.children.length; i++) {
+        b.appendChild(x.children[i]);
+    }
+    //执行结果：2 4 1 3，
+    //由于是living collection，length一直在变
+    //正确的写法
+    while(x.children.length) {
+        b.appendChild(x.children[0]);
+    }
+</script>  
