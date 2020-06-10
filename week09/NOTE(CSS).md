@@ -99,3 +99,6 @@ CMYK：Cyanogen青，magenta品红，yellow黄，K黑，用于印刷行业
 用图形的时候建议用：
 + data uri + svg（svg是现行的最好的矢量图标准）
 + data:image/svg+xml,<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg"> <ellipse cx="300" cy="150" rx="200" ry="80" style="fill:rgb(200,100,50);stroke:rgb(0,0,100);stroke-width:2" /></svg>
+
+
+伪元素是在computeCSS里出来的
