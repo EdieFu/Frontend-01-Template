@@ -1,0 +1,37 @@
+<style>
+    a {
+        color: red;
+    }
+
+    p::before {
+        color: red;
+        content:"Hello"
+    }
+</style>
+
+<link rel="stylesheet" title="x" href="data:text/css,p%7Bcolor:blue%7D">  <!--用独立文件的地方都可以用dataurl写成内联，大括号用转义-->
+
+<!--
+    document.styleSheets
+    可看到有两条CSSStyleSheet
+-->
+
+<a>abc
+</a>
+<!--
+    document.styleSheets[0].cssRules[0].style.color = "lightblue"
+    修改即刻生效
+-->
+
+
+<p> world</p>
+<!--
+    document.styleSheets[0].cssRules[1]
+    可以改伪元素的内容
+    document.styleSheets[0].cssRules[1].style.fontSize = "40px"
+    document.styleSheets[0].cssRules[1].style.color = "blue"
+    但是content改不了，但可以del掉再insert：
+    document.styleSheet[0].deleteRule(0);
+    document.styleSheet[0].insertRule("p::befor{color:red; content:\"hello2\";}")
+     
+-->
