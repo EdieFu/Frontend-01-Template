@@ -1,0 +1,23 @@
+<div id="a">123456789</div>
+
+<div id="b">123<span style="background-color: pink;">456789</span>0123456789</div>
+
+<script>
+    //let element = document.getElementById("a");
+    //调试range.extractContents();可以看到fragment取下文本内容
+
+    let element = document.getElementById("a").childNodes[0]; //childNodes[0]表示选中了唯一个一个文本节点
+    let range = new Range();
+    range.setStart(element, 3);
+    range.setEnd(element, 6); //把文本里的字符切掉
+
+
+    //更精细的操作，跨标签
+    let range2 = new Range();
+    //range2.setStart(document.getElementById("b").childNodes[1].childNodes[0], 3);
+    //range2.setStart(document.getElementById("b").childNodes[1].childNodes[0], 0);  //把span的内容都切走了，但是span这个容器还在
+    range2.setStart(document.getElementById("b").childNodes[0], 3);  //把span都窃走了
+    range2.setEnd(document.getElementById("b").childNodes[2], 3); 
+
+
+</script>
