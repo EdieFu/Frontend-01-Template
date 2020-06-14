@@ -1,0 +1,69 @@
+<div id="a">
+    <span>1</span>
+    <p>2</p>
+    <a>3</a>
+    <div>4</div>
+</div>
+
+<script>
+    let element = document.getElementById("a");
+
+    /*
+    Level0解法
+    不懂DOM树的操作模式是自动remove的
+    
+    function reverseChildren(element){
+        let children = Array.prototype.slice.call(element.childNodes);
+
+        for(let child of children) {
+            element.removeChild(child);
+        }
+        //或 element.innerHTML = ""; 把节点都摘下来
+
+        children.reverse();  //翻转过来
+
+        for(let child of children) {  //再一个个append回去
+            element.appendChild(child);
+        }
+    }
+    */
+
+
+    /*
+    Level1解法
+    如果知道DOM树的节点操作是自动remove的
+    
+    function reverseChildren(element){
+        var l = element.childNodes.length;
+        while(l-- > 0) {
+            element.appendChild(element.childNodes[l])
+        }
+    }
+    */
+
+
+ /* 
+ Level2解法
+ 当去reverse元素的时候，希望重排次数尽可能少
+   比如Level1解法，把元素摘下来，再append上去，重排次数非常厉害
+ 而通过range，只需要对真实DOM树做两次操作，
+   第一次把所有子节点移除，
+   第二次把已经排好顺序(在fragment中排序)的子节点append上去
+
+ */
+    function reverseChildren(element) {
+        let range = new Range();
+        range.selectNodeContents(element); //选中所有子元素
+
+        let fragment = range.extractContents(); //通过extractContets一次把所有子元素都摘下来
+        
+        var l = fragment.childNodes.length; //在fragment这个临时点上进行操作，不会造成重排重绘
+        while(l-- > 0) {
+            fragment.appendChild(fragment.childNodes[l]);
+        }
+        element.appendChild(fragment); //把fragment整体append回去
+    }
+
+    reverseChildren(element);
+
+</script>
