@@ -1,0 +1,122 @@
+<!--
+    Step 4 判断胜负
+        1.8种胜负情况，三横三纵两个对角线，枚举
+        2.设计胜负的函数，参数是新落子的坐标，返回值true/false
+-->
+
+<style>
+    .cell {
+        width:100px;
+        height:100px;
+        background-color: green;
+        border:solid 1px white;
+        display:inline-block; /* 正常流排版*/
+        vertical-align: middle;   /*一定要有vertical-align，否则基于baseline排版会变得奇怪 */
+                            /* 处理盒的css和处理文字的css中间空一行*/
+        line-height: 100px; /*因为emoj比较大，给了一个line-height灌满，这样emoj可垂直居中 */
+        font-size: 50px;
+        text-align: center; /*水平居中 */
+    }
+</style>
+
+<div id="board"></div>
+
+<script>
+    let pattern = [  //采用二维数组方式表示棋盘和每格状态
+        [2, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0]
+    ]
+
+    let color = 1;
+
+    function show(){ //画出棋盘
+        let board = document.getElementById("board");
+        board.innerHTML = "";
+
+        for(let i = 0; i < 3; i++){
+            for(let j = 0; j < 3; j++){  //一定要用let，否则需要用IFE解决闭包问题
+                let cell = document.createElement("div"); //创建一个cell
+                cell.classList.add("cell");          //给cell加上样式class
+                cell.innerText = 
+                    pattern[i][j] == 2 ? "❌" :  //给cell内容放上emoj
+                    pattern[i][j] == 1 ? "⭕️" : 
+                    "";
+
+                cell.addEventListener("click", () => move(j, i)); //监听点击事件后，调用move走步，注意j是X轴坐标，i是Y轴坐标
+
+                board.appendChild(cell); 
+            }
+            board.appendChild(document.createElement("br"))  //每填完一行就append一个br换行
+        }
+    }
+
+
+    function move(x, y) {  //走步，获取坐标后改patter状态
+        if(pattern[y][x] != 0)   //判断原位置有没有子
+            return;
+        pattern[y][x] = color;
+        if(check()) {
+            alert(color == 2 ? "❌ is winner" : "⭕️ is winner!");
+        }
+        color = 3 - color;  // 用3-实现交替落子
+        show(); //在show里先 board.innerHTML清空，再在此处调用show
+
+    }
+
+    function check() { //需要pattern，color（白子走完了判断白有没有赢，黑子走完判断黑有没有赢）
+        for(let i = 0; i < 3; i++) {
+            let win = true;
+            for(let j = 0; j < 3; j++) {
+                if(pattern[i][j] != color) {
+                    win = false;
+                    break;   //只要有一个颜色不一样，一行就没赢
+                }       
+            }
+            if(win) 
+                return true;
+        }
+
+        for(let i = 0; i < 3; i++) {
+            let win = true;
+            for(let j = 0; j < 3; j++) {
+                if(pattern[j][i] != color) {  //i,j换位，变成竖行
+                    win = false;
+                    break;   
+                }       
+            }
+            if(win) 
+                return true;
+        }
+
+        {
+            let win = true;
+            for(let j = 0; j < 3; j++) {
+                if(pattern[j][j] != color) { //对角线
+                    win = false;
+                    break;   
+                }       
+            }
+            if(win) 
+                return true;
+        }
+
+        {
+            let win = true;
+            for(let j = 0; j < 3; j++) {
+                if(pattern[j][2-j] != color) { //对角线
+                    win = false;
+                    break;   
+                }       
+            }
+            if(win) 
+                return true;
+        }
+
+        return false;
+
+    }
+
+    show(pattern);
+
+</script>
