@@ -1,0 +1,70 @@
+<style>
+    div {
+        display:inline-block;
+        width:100px;
+        height:100px;
+        border-radius: 50px;
+        margin:30px;
+        background-color:grey;
+    }
+    .green.light {
+        background-color:green;
+    }
+    .yellow.light {
+        background-color:yellow;
+    }
+    .red.light {
+        background-color:red;
+    }
+</style>
+
+
+<div class="green"></div>
+<div class="yellow"></div>
+<div class="red"></div>
+
+
+<script>
+     //业务逻辑和时序变化逻辑分开
+    function green(){ 
+        var lights = document.getElementsByTagName("div");
+        for(var i = 0; i < 3; i++)
+            lights[i].classList.remove("light") 
+        document.getElementsByClassName("green")[0].classList.add("light")
+    }
+
+    function red(){  
+        var lights = document.getElementsByTagName("div");
+        for(var i = 0; i < 3; i++)
+            lights[i].classList.remove("light") 
+        document.getElementsByClassName("red")[0].classList.add("light")
+    }
+
+    function yellow(){  
+        var lights = document.getElementsByTagName("div");
+        for(var i = 0; i < 3; i++)
+            lights[i].classList.remove("light") 
+        document.getElementsByClassName("yellow")[0].classList.add("light")
+    }
+     
+
+    function sleep(t) { //把setTimeout变成sleep
+        return new Promise((resolve, reject)=> {
+            setTimeout(resolve, t);
+        })
+    }
+
+    async function go(){
+        while(true) {
+            green();
+            await sleep(10000);
+            yellow();
+            await sleep(2000);
+            red();
+            await sleep(5000);
+        }
+    }
+
+
+</script>
+
