@@ -1,0 +1,109 @@
+<!--
+    Step 3 可视化路径
+
+-->
+
+
+<style>
+    .cell {
+        display:inline-block;
+        width:6px;
+        height:6px;
+        background-color: gray;
+        border-bottom:solid 1px white;
+        border-right:solid 1px white;
+        vertical-align: middle;
+    }
+    #container{
+        width:701px;
+    }
+</style>
+
+
+<div id="container"></div>
+<button onclick="localStorage.map = JSON.stringify(map)">save</button>  
+
+
+<script>
+    //var map = new Array(10000).fill(0);
+    var map = localStorage.map ? JSON.parse(localStorage.map) : new Array(10000).fill(0);
+    //把map存到localStorage后，有map的话直接用
+
+    let container = document.getElementById("container");
+
+    for(let y = 0; y < 100; y++) {
+        for(let x = 0; x < 100; x++) {
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+
+            if(map[y * 100 + x] === 1)
+                cell.style.backgroundColor = 'black';
+
+            cell.addEventListener("mouseover", () => {
+                if(mouse) {
+                    if(clear) {
+                        cell.style.backgroundColor = ''; //只是改样式
+                        map[y * 100 + x] = 0; //真正改map状态
+                    } else {
+                        cell.style.backgroundColor = 'black';
+                        map[y * 100 + x] = 1;
+                    }
+                }
+                    
+            })
+
+        container.appendChild(cell);
+        }
+    }
+
+    let mouse = false;
+    let clear = false;
+
+    document.addEventListener('mousedown', e => { //判断是右键则橡皮擦
+        mouse = true
+        //clear = (e.which === 3);  //一般鼠标三个键，右键是3，中间滚轮是2
+        clear = (e.button === 2);
+    })
+    document.addEventListener('mouseup', ()=> mouse = false)
+
+    document.addEventListener('contextmenu', e => e.preventDefault()) //禁掉右键菜单contextmenu
+   
+
+    function sleep(t) {
+        return new Promise(function(resolve){
+            setTimeout(resolve, t);
+        });
+    }
+   
+    async function findPath(map, start, end) {
+        let queue = [start]; //使用一个队列，存走过的路径。先把start先放进去
+
+        map = map.slice(); // 为了给已经走过的点标识，又不想污染原MAP，就slice一个新MAP
+
+        async function insert([x, y]) {
+            if(map[100 * y + x] !== 0)  //遇到有障碍，走不了
+                return;
+            if(x < 0 || y < 0 || x >= 100 || y >= 100)  //如果到了棋盘边界，走不了
+                return;
+            map[100 * y + x] = 2;
+            container.children[y * 100 + x].style.backgroundColor = "lightgreen"; //走过的路径变色
+            await sleep(5);
+            queue.push([x, y])
+        }
+
+        while(queue.length) { //每次循环，展开一个格，即找到上下左右
+            let [x, y] = queue.shift();  //pop和unshift / push和shift
+            console.log(x, y);
+            if(x === end[0] && y === end[1])
+                return true;
+            await insert([x - 1, y]);
+            await insert([x + 1, y]);
+            await insert([x, y - 1]);
+            await insert([x, y + 1]);
+        }
+        return false;
+
+    }
+
+
+</script>
