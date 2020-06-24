@@ -337,6 +337,51 @@ async function findPath(map, start, end) {
 
 使用当前点的前一个点pre，这样每个点是怎么来的就记录到map.slice上
 
+```
+async function findPath(map, start, end) {
+    let queue = [start]; 
+
+    map = map.slice(); 
+
+    async function insert([x, y], pre) {
+        if(map[100 * y + x] !== 0)  //遇到有障碍，走不了
+            return;
+        if(x < 0 || y < 0 || x >= 100 || y >= 100)  //如果到了棋盘边界，走不了
+            return;
+        map[100 * y + x] = pre;
+        container.children[y * 100 + x].style.backgroundColor = "lightgreen"; //走过的路径变色
+        await sleep(5);
+        queue.push([x, y])
+    }
+
+    while(queue.length) { 
+        let [x, y] = queue.shift();  
+        console.log(x, y);
+        if(x === end[0] && y === end[1]) {
+            let path = [];
+            while(x !== start[0] || y !== start[1]) {
+                path.push([x, y]);
+                await sleep(30);  //打印出路径
+                container.children[y * 100 + x].style.backgroundColor = "pink";
+                [x, y] = map[y * 100 + x];
+            }
+            return path;
+        }
+    
+        await insert([x - 1, y], [x, y]);
+        await insert([x + 1, y], [x, y]);
+        await insert([x, y - 1], [x, y]);
+        await insert([x, y + 1], [x, y]);
+
+        await insert([x - 1, y - 1], [x, y]);  //加上斜线逻辑
+        await insert([x + 1, y - 1], [x, y]);
+        await insert([x - 1, y + 1], [x, y]);
+        await insert([x + 1, y + 1], [x, y]);
+    }
+    return null;
+}
+```
+
 ## Step 5 A*启发式搜索
 
 ```
