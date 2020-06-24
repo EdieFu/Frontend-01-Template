@@ -1,0 +1,166 @@
+<!--
+    Step 5 
+    问题：算法比较笨，当终点是[50,10]时，只用向横向去寻找，不需要向纵向寻找，但是目前算法不能实现
+    改进算法：启发函数，带启发函数的搜索策略叫A搜索
+    
+-->
+
+
+<style>
+    .cell {
+        display:inline-block;
+        width:6px;
+        height:6px;
+        background-color: gray;
+        border-bottom:solid 1px white;
+        border-right:solid 1px white;
+        vertical-align: middle;
+    }
+    #container{
+        width:701px;
+    }
+</style>
+
+
+<div id="container"></div>
+<button onclick="localStorage.map = JSON.stringify(map)">save</button>  
+
+
+<script>
+
+    class Sorted {  //无序数组  找到启发式搜索的搜索顺序
+        constructor(data, compare) {
+            this.data = data;
+            this.compare = compare;
+        }
+        take() {  //取数组里最小的，时间复杂度O(n),排序复杂度nlogn
+            if(!this.data.length)
+                return;
+            let min = this.data[0];
+            let minIndex = 0;
+            for(let i = 1; i < this.data.length; i++) {
+                if(this.compare(this.data[i], min) < 0) {
+                    min = this.data[i];
+                    minIndex = i;
+                }
+            }
+            this.data[minIndex] = this.data[this.data.length - 1];
+            this.data.pop();
+            return min;
+        }
+        insert(v) {
+            this.data.push(v);
+        }
+        get length() {
+            return this.data.length;
+        }
+    }
+
+
+    //var map = new Array(10000).fill(0);
+    var map = localStorage.map ? JSON.parse(localStorage.map) : new Array(10000).fill(0);
+    //把map存到localStorage后，有map的话直接用
+
+    let container = document.getElementById("container");
+
+    for(let y = 0; y < 100; y++) {
+        for(let x = 0; x < 100; x++) {
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+
+            if(map[y * 100 + x] === 1)
+                cell.style.backgroundColor = 'black';
+
+            cell.addEventListener("mouseover", () => {
+                if(mouse) {
+                    if(clear) {
+                        cell.style.backgroundColor = ''; //只是改样式
+                        map[y * 100 + x] = 0; //真正改map状态
+                    } else {
+                        cell.style.backgroundColor = 'black';
+                        map[y * 100 + x] = 1;
+                    }
+                }
+                    
+            })
+
+        container.appendChild(cell);
+        }
+    }
+
+    let mouse = false;
+    let clear = false;
+
+    document.addEventListener('mousedown', e => { //判断是右键则橡皮擦
+        mouse = true
+        //clear = (e.which === 3);  //一般鼠标三个键，右键是3，中间滚轮是2
+        clear = (e.button === 2);
+    })
+    document.addEventListener('mouseup', ()=> mouse = false)
+
+    document.addEventListener('contextmenu', e => e.preventDefault()) //禁掉右键菜单contextmenu
+   
+
+    function sleep(t) {
+        return new Promise(function(resolve){
+            setTimeout(resolve, t);
+        });
+    }
+   
+    async function findPath(map, start, end) {
+        map = map.slice(); // 为了给已经走过的点标识，又不想污染原MAP，就slice一个新MAP
+        
+        //let queue = [start]; //使用一个队列，存走过的路径。先把start先放进去
+        
+        function distance([x, y]) {
+            return (x - end[0]) ** 2 + (y -end[1] ** 2)  //比较大小无需开根号，浪费一次浮点计算
+        }
+
+        let collection = new Sorted([start], (a, b) => distance(a) - distance(b)); //
+
+        container.children[start[1] * 100 + start[0]].style.backgroundColor = "green";
+        container.children[end[1] * 100 + end[0]].style.backgroundColor = "red";  //标记起点终点
+        
+        
+        async function insert([x, y], pre) {
+            if(map[100 * y + x] !== 0)  //遇到有障碍，走不了
+                return;
+            if(x < 0 || y < 0 || x >= 100 || y >= 100)  //如果到了棋盘边界，走不了
+                return;
+            map[100 * y + x] = pre;
+            container.children[y * 100 + x].style.backgroundColor = "lightgreen"; //走过的路径变色
+            await sleep(5);
+            collection.insert([x, y]);
+        }
+
+        while(collection.length) { //每次循环，展开一个格，即找到上下左右
+            let [x, y] = collection.take();  
+            console.log(x, y);
+            if(x === end[0] && y === end[1]) {
+                let path = [];
+                while(x !== start[0] || y !== start[1]) {
+                    path.push([x, y]);
+                    await sleep(30);  //打印出路径
+                    container.children[y * 100 + x].style.backgroundColor = "pink";
+                    [x, y] = map[y * 100 + x];
+                }
+                //console.log(map);
+                return path;
+            }
+    
+            await insert([x - 1, y], [x, y]);
+            await insert([x + 1, y], [x, y]);
+            await insert([x, y - 1], [x, y]);
+            await insert([x, y + 1], [x, y]);
+
+            await insert([x - 1, y - 1], [x, y]);  //加上斜线逻辑
+            await insert([x + 1, y - 1], [x, y]);
+            await insert([x - 1, y + 1], [x, y]);
+            await insert([x + 1, y + 1], [x, y]);
+        }
+        return null;
+
+    }
+
+
+</script>
