@@ -1,0 +1,91 @@
+<!--
+    Step 1 地图编辑器
+            1.1.大小100*100，
+            1.2.鼠标可以在上面任意画线，画上的小格涂上黑色
+            1.3.能保存地图
+    表示地图的数据结构数据结构：地图比较大的时候推荐用一维数组
+    
+    没有fill的老时代如何创建10000的数组并都填上0：
+    var map = new Array(10001).join(0).split('').map(s => Number(s));
+    有fill：
+    var map = new Array(10000).fill(0);
+-->
+
+
+<style>
+    .cell {
+        display:inline-block;
+        width:6px;
+        height:6px;
+        background-color: gray;
+        border-bottom:solid 1px white;
+        border-right:solid 1px white;
+        vertical-align: middle;
+    }
+    #container{
+        width:701px;
+        /* line-height: 7px;  //加了<!DOCTYPE html>头时，行高会变高，可加上line-height解决
+           font-size: 0;
+         */
+    }
+
+    /* 加了<!DOCTYPE html>头时，行高会变高
+    #container{
+        display:flex;
+        flex-wrap:wrap;
+        width:701px;
+        line-height:7px;
+    }
+    */
+</style>
+
+
+<div id="container"></div>
+<button onclick="localStorage.map = JSON.stringify(map)">save</button>  
+
+
+<script>
+    //var map = new Array(10000).fill(0);
+    var map = localStorage.map ? JSON.parse(localStorage.map) : new Array(10000).fill(0);
+    //把map存到localStorage后，有map的话直接用
+
+    let container = document.getElementById("container");
+
+    for(let y = 0; y < 100; y++) {
+        for(let x = 0; x < 100; x++) {
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+
+            if(map[y * 100 + x] === 1)
+                cell.style.backgroundColor = 'black';
+
+            cell.addEventListener("mouseover", () => {
+                if(mouse) {
+                    if(clear) {
+                        cell.style.backgroundColor = ''; //只是改样式
+                        map[y * 100 + x] = 0; //真正改map状态
+                    } else {
+                        cell.style.backgroundColor = 'black';
+                        map[y * 100 + x] = 1;
+                    }
+                }
+                    
+            })
+
+        container.appendChild(cell);
+        }
+    }
+
+    let mouse = false;
+    let clear = false;
+
+    document.addEventListener('mousedown', e => { //判断是右键则橡皮擦
+        mouse = true
+        //clear = (e.which === 3);  //一般鼠标三个键，右键是3，中间滚轮是2
+        clear = (e.button === 2);
+    })
+    document.addEventListener('mouseup', ()=> mouse = false)
+
+    document.addEventListener('contextmenu', e => e.preventDefault()) //禁掉右键菜单contextmenu
+   
+</script>
