@@ -1,0 +1,79 @@
+<!--
+四则运算：
+
+<Expression> ::=
+    <AdditiveExpression><EOF>
+
+<AdditiveExpression> ::=
+    <MultiplicativeExpression>
+    |<AdditiveExpression><+><MultiplicativeExpression>
+    |<AdditiveExpression><-><MultiplicativeExpression>
+
+<MultiplicativeExpression> ::=
+    <Number>
+    |<MultiplicativeExpression><*><Number>
+    |<MultiplicativeExpression></><Number>
+
+-->
+
+<script>
+     
+var regexp = /([0-9\.]+)|([ \t\n\r]+)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g
+
+var dictionary = ["Number", "Whitespace", "LineTerminator", "+","-","*","/"];
+
+
+function* tokenize(source) {
+    var result = null;
+    var lastIndex = 0;
+
+    do {
+        lastIndex = regexp.lastIndex;
+        result = regexp.exec(source); 
+        if(!result) break;
+        
+        if(regexp.lastIndex - lastIndex > result[0].length) //有不认识的进来，如~
+            throw new Error("Unexpected token! \"" + 
+            source.slice(lastIndex, regexp.lastIndex - result[0].length) + "\"!");
+
+        let token = {
+            type: null,
+            value: null
+        }
+
+        for(var i = 0; i < dictionary.length; i++) { //result第一个是全匹配，第二个开始才是和dictionary单独匹配
+            if(result[i + 1])
+                //console.log(dictionary[i]);
+                token.type = dictionary[i];
+        }
+
+        //console.log(result[0]);
+        token.value = result[0];
+
+        yield token;
+
+    } while(result);
+
+    yield { type: "EOF" };
+}
+
+function Expression(source) {
+
+}
+
+function AdditiveExpression(source) {
+
+}
+
+function MultiplicativeExpression(source) {
+        console.log(source);
+}
+
+let source = [];
+for(let token of tokenize("1024 + 10 * 25")) { //generator的for循环的item相当于调用next()吗？
+    if(token.type !== "Whitespace" && token.type !== "LineTerminator") //过滤无效Token
+        source.push(token);
+};
+
+MultiplicativeExpression(source);
+</script>
