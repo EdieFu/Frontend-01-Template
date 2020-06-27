@@ -1,0 +1,49 @@
+<!--
+    词法分析:
+    用generator和yield改进
+-->
+
+<script>
+     
+var regexp = /([0-9\.]+)|([ \t\n\r]+)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g
+
+var dictionary = ["Number", "Whitespace", "LineTerminator", "+","-","*","/"];
+
+
+function* tokenize(source) {
+    var result = null;
+    var lastIndex = 0;
+
+    do {
+        lastIndex = regexp.lastIndex;
+        result = regexp.exec(source); 
+        if(!result) break;
+        
+        if(regexp.lastIndex - lastIndex > result[0].length) //有不认识的进来，如~
+            throw new Error("Unexpected token! \"" + 
+            source.slice(lastIndex, regexp.lastIndex - result[0].length) + "\"!");
+
+        let token = {
+            type: null,
+            value: null
+        }
+
+        for(var i = 0; i < dictionary.length; i++) { //result第一个是全匹配，第二个开始才是和dictionary单独匹配
+            if(result[i + 1])
+                //console.log(dictionary[i]);
+                token.type = dictionary[i];
+        }
+
+        //console.log(result[0]);
+        token.value = result[0];
+
+        yield token;
+
+    } while(result);
+}
+
+for(let token of tokenize("~1024 + 10 * 25")) { //generator的for循环的item相当于调用next()吗？
+    console.log(token);
+};
+
+</script>
