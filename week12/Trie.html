@@ -1,0 +1,53 @@
+<script>
+    class Trie {
+        constructor(){
+            //this.root = Array(26).fill(null); 可以存26个字母的数组
+            this.root = Object.create(null); //但是英文字母有大小写，也很难保证不参入一些特殊字符、空格。可以一步到位用Object存
+            //this.root = new Map(); //Map最好，每一位不管是什么都存进map里。存数组占的空间比较大，MAP会存的比较紧凑一些，取决于JS里map的实现
+        }
+        insert(word) {
+            let node = this.root;
+            for(let c of word) {
+                if(!node[c])
+                    node[c] = Object.create(null);
+                node = node[c];
+            }
+            if(!("$" in node))
+                node["$"] = 0; // "ca"其实是"ca$"，结束符$
+
+            node["$"] ++
+        }
+        most() {  //统计出现最多的串
+            let max = 0;
+            let maxWord = null;
+            let visit = (node, word) => {
+                if(node.$ && node.$ > max) {
+                    max = node.$;
+                    maxWord = word;
+                }
+                for(let p in node) {
+                    visit(node[p], word + p);
+                }
+            }
+            visit(this.root, "");
+            console.log(maxWord);
+        }
+    }
+
+    //var trie = new Trie;
+    //trie.insert("good")
+
+    function randomWord(length) {
+        var s = "";
+        for(let i = 0; i < length; i++) 
+            s += String.fromCharCode(Math.random() * 26 + "a".charCodeAt(0));
+        return s;
+    }
+
+    let trie = new Trie();
+
+    for(let i = 0; i < 10000; i++) {
+        trie.insert(randomWord(4));
+    }
+
+</script>
