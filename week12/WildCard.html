@@ -1,0 +1,71 @@
+<script>
+    /* 
+    只有*的情况： ab*asdbj*asdjhk*asda
+    *是否贪婪，是尽量匹配多还是匹配少？
+
+    abchbxcbbbbbbbbb
+    a*ch*x*
+    *是贪婪匹配，前面的星尽量匹配少，最后一颗星尽量匹配多
+    对于中间的*，如上例，找的不是*而是ch，即在一个字符串里找一个pattern，即KMP
+   
+   方法：正则，拆开用exec
+
+   加上？
+   *c?h*x*，处理带？的KMP，难度非常高，使用状态机
+
+    */
+
+    function find(source, pattern) { 
+        let starCount = 0;  
+        for(let i = 0; i < pattern.length; i++)  {   //找有几颗*
+            if(pattern[i] === "*")
+                    starCount ++;
+        }
+
+        if(starCount === 0) {   //没有*，退化成字符串匹配
+            for(let i = 0; i < pattern.length; i++) {
+                if(pattern[i] !== source[i] && pattern[i] !== "?")
+                    return false;
+            }
+            return;
+        }
+
+        let i = 0;
+        let lastIndex = 0;
+
+        for(i = 0; pattern[i] !== "*"; i++) {   //解决头上的*
+                if(pattern[i] !== source[i] && pattern[i] !== "?")
+                    return false;   
+        }
+
+        lastIndex = i;
+
+
+        for(let p = 0; p < starCount - 1; p++) { //处理每一段的*
+            i++;
+            let subPattern = "";
+            while(pattern[i] !== "*") {
+                subPattern += pattern[i];
+                i++;
+            }
+
+            let reg = new RegExp(subPattern.replace(/\?/g, "[\\s\\S]"), "g");
+            reg.lastIndex = lastIndex;
+
+            reg.exec(source);
+
+            lastIndex = reg.lastIndex;        
+        }
+
+        for(let j = 0; j <= source.length - lastIndex && pattern[pattern.length - j] !== "*"; j++) {  //尾巴的*
+            if(pattern[pattern.length - j] !== source[source.length - j] 
+                && pattern[pattern.length - j] !== "?")
+                return false;
+        }
+        return true;
+
+    } 
+
+    find("abcabcabxaac","a*b*bx*c");   
+
+</script>
