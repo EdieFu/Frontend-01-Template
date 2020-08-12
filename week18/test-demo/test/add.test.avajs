@@ -1,0 +1,11 @@
+//let mod = require('../src/add');
+import {add} from "../src/add";
+
+//const test = require('ava');
+import test from "ava";
+
+
+test('foo', t => {   
+    if(mod.add(3, 4) === 7)
+      t.pass();
+});
